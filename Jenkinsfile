@@ -1,5 +1,4 @@
 pipeline {
-
     agent any
 
     environment {
@@ -7,25 +6,29 @@ pipeline {
     }
 
     stages {
-
         stage('Checkout') {
             steps {
                 checkout scm
             }
         }
 
+        stage('Check Workspace') {
+            steps {
+                sh 'pwd'
+                sh 'ls -l'
+            }
+        }
+
         stage('Build with Maven') {
             steps {
-                dir('aws-app') { // Adjust this if your pom.xml is in a different directory
-                    sh 'mvn clean package -DskipTests'
-                }
+                sh 'mvn clean package -DskipTests'
             }
         }
 
         stage('Build Docker Image') {
             steps {
                 script {
-                    docker.build(DOCKER_IMAGE, 'aws-app') // build the Docker image from the 'aws-app' folder
+                    docker.build(DOCKER_IMAGE)
                 }
             }
         }
@@ -43,10 +46,7 @@ pipeline {
         stage('Run Container') {
             steps {
                 script {
-                    // Stop and remove old container if exists
                     sh 'docker rm -f sample-app || true'
-
-                    // Run new container
                     sh "docker run -d -p 9090:8080 --name sample-app ${DOCKER_IMAGE}"
                 }
             }
