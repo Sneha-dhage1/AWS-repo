@@ -4,7 +4,7 @@ pipeline {
  
     environment {
 
-        DOCKER_IMAGE = "nikhil1112/sample-app:latest"
+        DOCKER_IMAGE = "sneha123/sample-app:latest"
 
     }
  
