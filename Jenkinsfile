@@ -2,34 +2,27 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = "snehadhage96/aws-repo:latest"  // Updated to your DockerHub repo/image
+        IMAGE_NAME = 'snehadhage96/aws-repo'
+        IMAGE_TAG = 'latest'
     }
 
     stages {
-        stage('Checkout') {
+        stage('Checkout Source') {
             steps {
                 checkout scm
             }
         }
 
-        stage('Check Workspace') {
+        stage('Build JAR with Maven') {
             steps {
-                sh 'pwd'
-                sh 'ls -l'
-            }
-        }
-
-        stage('Build with Maven') {
-            steps {
-                sh 'mvn clean package -DskipTests'
-                sh 'ls -lh target/*.jar || echo "Jar not found!"'
+                sh 'mvn clean package'
             }
         }
 
         stage('Build Docker Image') {
             steps {
                 script {
-                    docker.build(DOCKER_IMAGE)
+                    dockerImage = docker.build("${IMAGE_NAME}:${IMAGE_TAG}")
                 }
             }
         }
@@ -38,7 +31,7 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry('https://index.docker.io/v1/', 'dockerhub_creds') {
-                        docker.image(DOCKER_IMAGE).push()
+                        dockerImage.push()
                     }
                 }
             }
@@ -47,22 +40,26 @@ pipeline {
         stage('Run Container') {
             steps {
                 script {
-                    sh 'docker rm -f aws-repo || true'  // container name updated
-                    sh "docker run -d -p 9090:8080 --name aws-repo ${DOCKER_IMAGE}"  // container name updated
+                    sh '''
+                    # Stop and remove previous container if exists
+                    docker rm -f app-container || true
+
+                    # Run new container mapping container port 8080 to host port 9090
+                    docker run -d --name app-container -p 9090:8080 snehadhage96/aws-repo:latest
+                    '''
                 }
             }
         }
     }
 
     post {
-        always {
-            echo 'Pipeline completed.'
-        }
         success {
-            echo 'Build and deployment successful!'
+            echo "✅ Pipeline completed successfully. App is running on http://<your-server>:9090"
         }
         failure {
-            echo 'Build or deployment failed.'
+            echo "❌ Build or deployment failed."
         }
     }
 }
+
+
