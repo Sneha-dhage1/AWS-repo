@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = "sneha123/sample-app:latest"
+        DOCKER_IMAGE = "snehadhage96/sample-app:AWS-repo" // Your DockerHub repo/image
     }
 
     stages {
@@ -22,6 +22,7 @@ pipeline {
         stage('Build with Maven') {
             steps {
                 sh 'mvn clean package -DskipTests'
+                sh 'ls -lh target/*.jar || echo "Jar not found!"'
             }
         }
 
@@ -36,7 +37,7 @@ pipeline {
         stage('Push to DockerHub') {
             steps {
                 script {
-                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-creds') {
+                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub_creds') {
                         docker.image(DOCKER_IMAGE).push()
                     }
                 }
