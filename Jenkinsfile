@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = "snehadhage96/sample-app:AWS-repo" // Your DockerHub repo/image
+        DOCKER_IMAGE = "snehadhage96/aws-repo:latest"  // Updated to your DockerHub repo/image
     }
 
     stages {
@@ -47,8 +47,8 @@ pipeline {
         stage('Run Container') {
             steps {
                 script {
-                    sh 'docker rm -f sample-app || true'
-                    sh "docker run -d -p 9090:8080 --name sample-app ${DOCKER_IMAGE}"
+                    sh 'docker rm -f aws-repo || true'  // container name updated
+                    sh "docker run -d -p 9090:8080 --name aws-repo ${DOCKER_IMAGE}"  // container name updated
                 }
             }
         }
@@ -66,4 +66,3 @@ pipeline {
         }
     }
 }
-
