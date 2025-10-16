@@ -1,0 +1,20 @@
+# Ignore Maven build output
+target
+
+# Ignore temporary or log files
+*.log
+*.tmp
+
+# Ignore version control
+.git
+.gitignore
+
+# Ignore OS or IDE-specific files
+.DS_Store
+*.swp
+*.bak
+
+# Do NOT ignore src or pom.xml — they are needed for building the image
+# DO NOT add:
+# src
+# pom.xml
