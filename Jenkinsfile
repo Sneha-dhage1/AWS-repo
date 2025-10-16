@@ -22,7 +22,6 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Assign Docker image to variable
                     dockerImage = docker.build("${IMAGE_NAME}:${IMAGE_TAG}")
                 }
             }
@@ -36,15 +35,6 @@ pipeline {
                     }
                 }
             }
-        }
-    }
-
-    post {
-        success {
-            echo '✅ Build and push succeeded!'
-        }
-        failure {
-            echo '❌ Build or deployment failed.'
         }
     }
 }
