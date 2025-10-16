@@ -1,3 +1,4 @@
+
 pipeline {
     agent any
 
@@ -22,6 +23,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
+                    // Assign to global dockerImage variable
                     dockerImage = docker.build("${IMAGE_NAME}:${IMAGE_TAG}")
                 }
             }
@@ -36,30 +38,15 @@ pipeline {
                 }
             }
         }
-
-        stage('Run Container') {
-            steps {
-                script {
-                    sh '''
-                    # Stop and remove previous container if exists
-                    docker rm -f app-container || true
-
-                    # Run new container mapping container port 8080 to host port 9090
-                    docker run -d --name app-container -p 9090:8080 snehadhage96/aws-repo:latest
-                    '''
-                }
-            }
-        }
     }
 
     post {
-        success {
-            echo "✅ Pipeline completed successfully. App is running on http://<your-server>:9090"
-        }
         failure {
             echo "❌ Build or deployment failed."
         }
+        success {
+            echo "✅ Build and push successful."
+        }
     }
 }
-
 
