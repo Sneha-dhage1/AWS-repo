@@ -1,9 +1,8 @@
-
 pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = 'snehadhage96/aws-repo'
+        IMAGE_NAME = 'snehadhage96/simple-app'
         IMAGE_TAG = 'latest'
     }
 
@@ -23,7 +22,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Assign to global dockerImage variable
+                    // Assign Docker image to variable
                     dockerImage = docker.build("${IMAGE_NAME}:${IMAGE_TAG}")
                 }
             }
@@ -32,7 +31,7 @@ pipeline {
         stage('Push to DockerHub') {
             steps {
                 script {
-                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub_creds') {
+                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-creds') {
                         dockerImage.push()
                     }
                 }
@@ -41,11 +40,11 @@ pipeline {
     }
 
     post {
-        failure {
-            echo "❌ Build or deployment failed."
-        }
         success {
-            echo "✅ Build and push successful."
+            echo '✅ Build and push succeeded!'
+        }
+        failure {
+            echo '❌ Build or deployment failed.'
         }
     }
 }
