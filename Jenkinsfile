@@ -37,12 +37,11 @@ pipeline {
             }
         }
 
-        // ✅ Added Deploy Stage
         stage('Deploy to Server') {
             steps {
                 sshagent(['server-ssh-key']) {
                     sh '''
-                        ssh -o StrictHostKeyChecking=no ubuntu@<your-server-ip> '
+                        ssh -o StrictHostKeyChecking=no ubuntu@54.175.132.196 '
                             docker pull snehadhage96/simple-app:latest &&
                             docker stop simple-app || true &&
                             docker rm simple-app || true &&
