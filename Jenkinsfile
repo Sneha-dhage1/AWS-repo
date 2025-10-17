@@ -1,11 +1,6 @@
 pipeline {
     agent any
 
-    environment {
-        IMAGE_NAME = 'snehadhage96/simple-app'
-        IMAGE_TAG = 'latest'
-    }
-
     stages {
         stage('Checkout Source') {
             steps {
@@ -22,7 +17,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    dockerImage = docker.build("${IMAGE_NAME}:${IMAGE_TAG}")
+                    dockerImage = docker.build("snehadhage96/simple-app:latest")
                 }
             }
         }
