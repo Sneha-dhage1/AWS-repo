@@ -36,6 +36,31 @@ pipeline {
                 }
             }
         }
+
+        // ✅ Added Deploy Stage
+        stage('Deploy to Server') {
+            steps {
+                sshagent(['server-ssh-key']) {
+                    sh '''
+                        ssh -o StrictHostKeyChecking=no ubuntu@<your-server-ip> '
+                            docker pull snehadhage96/simple-app:latest &&
+                            docker stop simple-app || true &&
+                            docker rm simple-app || true &&
+                            docker run -d -p 8080:8080 --name simple-app snehadhage96/simple-app:latest
+                        '
+                    '''
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo '✅ Build, Push, and Deployment succeeded!'
+        }
+        failure {
+            echo '❌ Pipeline failed. Please check logs.'
+        }
     }
 }
 
